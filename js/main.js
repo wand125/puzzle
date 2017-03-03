@@ -1,7 +1,7 @@
 class Runner {
   start() {
     this.manager = new Manager();
-    this.manager.create(nikoli3);
+    this.manager.create(kurotora);
   } 
 }
 

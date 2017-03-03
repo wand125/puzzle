@@ -162,7 +162,12 @@ class Field {
     this.rooms.filter(room => !room.fix).forEach(room => {
       // 部屋候補のマスを更新 
       room.prediction = this.calcRoomPrediction(room);
-      if (room.prediction.filter(_ => _ === 1).length === room.roomSize) {
+      // 候補部屋サイズ
+      let predictionRoomSize = room.prediction.filter(_ => _ === 1).length;
+      // 確定部屋サイズ
+      let settledRoomSize = this.result.filter(_ => _ === room.id).length;
+
+      if (predictionRoomSize === room.roomSize) {
         // 候補マスが部屋の大きさに等しい: 部屋の確定
         this.boardIdArray
           .filter(id => room.prediction[id] === 1)
@@ -179,18 +184,51 @@ class Field {
         room.fix = true;
         flag = true;
       }
-      else if (this.result.filter(_ => _ === room.id).length === room.roomSize) {
+      else if (settledRoomSize === room.roomSize) {
         // 確定マスが部屋の大きさに等しい: 部屋の確定
         // 周囲を壁にする
         this.boardIdArray
           .filter(id => this.result[id] === room.id)
           .forEach(id => {
             Array.from(this.getDelta(id))
-              .filter(_=> this.result[_] === 0)
+              .filter(_=> this.result[_] === CellType.Unknown)
               .forEach(_ => this.result[_] = CellType.Wall);
           });
         room.fix = true;
         flag = true;
+      }
+      else if (settledRoomSize === room.roomSize - 1
+          && predictionRoomSize === room.roomSize + 1
+          ) {
+        let prediction = this.boardIdArray.filter(id => this.result[id] !== room.id
+            && room.prediction[id] === 1);
+        prediction[0]
+        if (this.getX(prediction[0]) !== 0
+            && prediction[1] - prediction[0] === this.width - 1) {
+          // *: prediction
+          // _*
+          // *_
+          [prediction[0] - 1, prediction[1] + 1].filter(id =>
+              this.result[id] === CellType.Unknown
+              )
+            .forEach(id => {
+              this.result[id] = CellType.Wall;
+              flag = true;
+            });
+        }
+        if (this.getX(prediction[0]) !== this.width - 1
+            && prediction[1] - prediction[0] === this.width + 1) {
+          // *: prediction
+          // *_
+          // _*
+          [prediction[0] + 1, prediction[1] - 1].filter(id =>
+              this.result[id] === CellType.Unknown
+              )
+            .forEach(id => {
+              this.result[id] = CellType.Wall;
+              flag = true;
+            });
+        }
       }
     });
 
@@ -225,7 +263,6 @@ class Field {
           flag = true;
         }
       });
-    if (flag) { return flag; }
 
     for(let id of this.boardIdArray.filter(id => this.getBoard(id) === CellType.Unknown)) {
       // 白マスを仮定
