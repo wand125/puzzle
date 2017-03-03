@@ -23,7 +23,6 @@ class Field {
   constructor() {
     this.result = [];
     this.rooms = [];
-    this.wall = new Wall();
     this.dx = [1,0,-1,0];
     this.dy = [0,1,0,-1];
     this.assumption = [];
