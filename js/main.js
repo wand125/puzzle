@@ -1,7 +1,7 @@
 class Runner {
   start() {
     this.manager = new Manager();
-    this.manager.create(kurotora);
+    this.manager.create(logicgames19);
   } 
 }
 

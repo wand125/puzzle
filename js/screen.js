@@ -1,7 +1,7 @@
 class Screen {
   constructor() {
-    this.Width = 360;
-    this.Height = 360;
+    this.Width = 480;
+    this.Height = 480;
     this.CellSize = 36;
     this.canvas = document.querySelector('#screen');
     this.ctx = this.canvas.getContext('2d');
@@ -11,6 +11,7 @@ class Screen {
     this.field = model.field;
     this.frameCount = 0;
     this.showGridLine = true;
+    this.CellSize = Math.min(this.Width / this.field.width, this.Height / this.field.height);
     this.drawField();
     this.drawGrid();
   }
@@ -30,7 +31,7 @@ class Screen {
     this.ctx.fillStyle = '#000';
     this.ctx.textAlign = 'center';
     this.ctx.textBaseline = 'middle';
-    this.ctx.font = "28px 'Arial'";
+    this.ctx.font = Math.floor(this.CellSize * 3 / 4)+"px 'Arial'";
     
     for(let y = 0; y < this.field.height; ++y) {
       for(let x = 0; x < this.field.width; ++x) {
